@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visa Budget Dashboard — Mobile App Design</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #E8EAF0;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  h1.page-title {
+    font-size: 28px;
+    color: #1A1F71;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  p.subtitle {
+    font-size: 14px;
+    color: #666F7E;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+
+  .screens-row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 48px;
+  }
+
+  .screen-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .screen-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1F71;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .phone {
+    width: 393px;
+    height: 852px;
+    border-radius: 40px;
+    overflow: hidden;
+    background: #F6F7FA;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* STATUS BAR */
+  .status-bar {
+    background: #1A1F71;
+    padding: 14px 24px 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: white;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .status-icons { font-size: 12px; font-weight: 400; }
+
+  /* HEADER */
+  .header {
+    background: #1A1F71;
+    padding: 10px 20px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .header .greeting { color: rgba(255,255,255,0.7); font-size: 13px; }
+  .header .name { color: white; font-size: 20px; font-weight: 700; margin-top: 2px; }
+  .avatar {
+    width: 40px; height: 40px;
+    background: #F7B600;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px; color: #1A1F71;
+  }
+
+  /* BUDGET CARD */
+  .budget-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 20px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .budget-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .budget-card-header .label { font-size: 14px; font-weight: 600; color: #666F7E; }
+  .budget-card-header .date { font-size: 12px; color: #666F7E; }
+  .amount-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .amount-big {
+    font-size: 40px;
+    font-weight: 700;
+    color: #22B172;
+  }
+  .amount-label { font-size: 14px; color: #666F7E; }
+  .progress-bar-bg {
+    height: 8px;
+    background: #ECEDEE;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #1A1F71, #2D35A8);
+    border-radius: 4px;
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .progress-labels .spent { color: #666F7E; }
+  .progress-labels .cap { color: #1A1D2D; font-weight: 600; }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 12px;
+  }
+  .section-header h3 { font-size: 17px; font-weight: 700; color: #1A1D2D; }
+  .section-header a { font-size: 13px; font-weight: 600; color: #1A1F71; text-decoration: none; }
+
+  /* CATEGORY ROWS */
+  .category-list { padding: 0 20px; display: flex; flex-direction: column; gap: 10px; }
+  .category-row {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .cat-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .cat-info { flex: 1; }
+  .cat-info .cat-name { font-size: 15px; font-weight: 600; color: #1A1D2D; }
+  .cat-info .cat-pct { font-size: 12px; color: #666F7E; margin-top: 2px; }
+  .cat-amount { font-size: 16px; font-weight: 700; color: #1A1D2D; }
+
+  /* SCROLLABLE CONTENT */
+  .scroll-content {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ADD BUTTON */
+  .add-button-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 16px 20px;
+    flex-shrink: 0;
+  }
+  .add-button {
+    background: #1A1F71;
+    color: white;
+    border: none;
+    border-radius: 28px;
+    padding: 14px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(26,31,113,0.3);
+    cursor: pointer;
+  }
+  .add-button .plus { font-size: 20px; font-weight: 700; }
+
+  /* TAB BAR */
+  .tab-bar {
+    background: white;
+    display: flex;
+    padding: 10px 12px 28px;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    color: #666F7E;
+  }
+  .tab-item.active { color: #1A1F71; }
+  .tab-item .tab-icon { font-size: 22px; }
+  .tab-item .tab-label { font-weight: 500; }
+  .tab-item.active .tab-label { font-weight: 600; }
+
+  /* ========== SCREEN 2: SET WEEKLY CAP ========== */
+  .cap-screen { background: white; }
+  .cap-hero {
+    background: linear-gradient(135deg, #1A1F71 0%, #2D35A8 100%);
+    padding: 40px 24px;
+    text-align: center;
+    border-radius: 0 0 32px 32px;
+  }
+  .cap-hero .emoji { font-size: 48px; margin-bottom: 16px; }
+  .cap-hero h2 { color: white; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .cap-hero p { color: rgba(255,255,255,0.75); font-size: 15px; line-height: 1.5; }
+
+  .cap-form {
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .cap-input-group { text-align: center; }
+  .cap-input-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666F7E;
+    display: block;
+    margin-bottom: 12px;
+  }
+  .cap-amount-input {
+    font-size: 56px;
+    font-weight: 700;
+    color: #1A1F71;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .cap-amount-input .dollar { font-size: 32px; color: #666F7E; font-weight: 600; }
+  .cap-underline {
+    width: 200px;
+    height: 3px;
+    background: #1A1F71;
+    border-radius: 2px;
+    margin: 8px auto 0;
+  }
+
+  .preset-chips {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .chip {
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 1.5px solid #E0E2E8;
+    color: #1A1D2D;
+    background: white;
+  }
+  .chip.active {
+    background: #1A1F71;
+    color: white;
+    border-color: #1A1F71;
+  }
+
+  .period-selector {
+    display: flex;
+    background: #F6F7FA;
+    border-radius: 12px;
+    padding: 4px;
+  }
+  .period-option {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666F7E;
+  }
+  .period-option.active {
+    background: white;
+    color: #1A1F71;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .cap-note {
+    text-align: center;
+    font-size: 13px;
+    color: #666F7E;
+    line-height: 1.5;
+    padding: 0 12px;
+  }
+
+  .btn-primary {
+    background: #1A1F71;
+    color: white;
+    border: none;
+    border-radius: 14px;
+    padding: 18px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(26,31,113,0.2);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: #1A1F71;
+    border: none;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  /* ========== SCREEN 3: ADD TRANSACTION ========== */
+  .form-screen { background: #F6F7FA; }
+  .form-header {
+    background: #1A1F71;
+    padding: 12px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .back-btn { color: white; font-size: 20px; cursor: pointer; }
+  .form-header h2 { color: white; font-size: 18px; font-weight: 600; }
+
+  .form-body { padding: 24px 20px; display: flex; flex-direction: column; gap: 20px; }
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+  .form-group label { font-size: 13px; font-weight: 600; color: #666F7E; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input {
+    background: white;
+    border: 1.5px solid #E0E2E8;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    color: #1A1D2D;
+  }
+  .form-input.amount-input {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1A1F71;
+    text-align: center;
+  }
+  .form-input.placeholder { color: #B0B5C0; }
+
+  .card-selector {
+    display: flex;
+    gap: 10px;
+  }
+  .card-option {
+    flex: 1;
+    background: white;
+    border: 1.5px solid #E0E2E8;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+  }
+  .card-option.selected {
+    border-color: #1A1F71;
+    background: rgba(26,31,113,0.04);
+  }
+  .card-option .card-last4 { font-size: 14px; font-weight: 600; color: #1A1D2D; }
+  .card-option .card-type { font-size: 11px; color: #666F7E; margin-top: 4px; }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .cat-chip {
+    background: white;
+    border: 1.5px solid #E0E2E8;
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #1A1D2D;
+  }
+  .cat-chip.selected {
+    border-color: #1A1F71;
+    background: rgba(26,31,113,0.04);
+    font-weight: 600;
+  }
+  .cat-chip .cat-chip-icon { font-size: 20px; margin-bottom: 4px; display: block; }
+
+  /* ========== SCREEN 4: CATEGORIES ========== */
+  .categories-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .full-cat-row {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .cat-bar-container { flex: 1; }
+  .cat-bar-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .cat-bar-name { font-size: 14px; font-weight: 600; color: #1A1D2D; }
+  .cat-bar-amount { font-size: 14px; font-weight: 700; color: #1A1D2D; }
+  .cat-bar-bg {
+    height: 6px;
+    background: #ECEDEE;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .cat-bar-fill { height: 100%; border-radius: 3px; }
+  .cat-bar-pct { font-size: 11px; color: #666F7E; margin-top: 4px; }
+
+  /* SUMMARY CARD */
+  .summary-card {
+    background: linear-gradient(135deg, #1A1F71, #2D35A8);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    margin-bottom: 8px;
+  }
+  .summary-card h3 { font-size: 14px; font-weight: 500; opacity: 0.8; margin-bottom: 4px; }
+  .summary-card .summary-amount { font-size: 28px; font-weight: 700; }
+  .summary-card .summary-sub { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+  .summary-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .summary-stat {
+    flex: 1;
+    background: rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .summary-stat .stat-value { font-size: 18px; font-weight: 700; }
+  .summary-stat .stat-label { font-size: 11px; opacity: 0.75; margin-top: 2px; }
+
+  /* ========== SCREEN 5: INSIGHTS ========== */
+  .insights-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+  .insight-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .insight-card .insight-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .insight-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .insight-title { font-size: 15px; font-weight: 600; color: #1A1D2D; }
+  .insight-body { font-size: 14px; color: #444B5A; line-height: 1.55; }
+  .insight-body strong { color: #1A1D2D; font-weight: 600; }
+
+  .insight-highlight {
+    background: linear-gradient(135deg, #1A1F71, #2D35A8);
+    color: white;
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .insight-highlight .emoji { font-size: 32px; margin-bottom: 10px; }
+  .insight-highlight h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .insight-highlight p { font-size: 14px; opacity: 0.85; line-height: 1.5; }
+
+  .week-toggle {
+    display: flex;
+    background: #F0F1F4;
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 4px;
+  }
+  .week-toggle-option {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666F7E;
+  }
+  .week-toggle-option.active {
+    background: white;
+    color: #1A1F71;
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  /* PRINT STYLES */
+  @media print {
+    body { background: white; padding: 0; }
+    .screens-row { gap: 0; page-break-after: always; }
+    .screen-wrapper { page-break-inside: avoid; margin-bottom: 20px; }
+    .phone { box-shadow: 1px 1px 4px rgba(0,0,0,0.1); }
+  }
+
+  @page { size: landscape; margin: 0.5in; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Visa Budget Dashboard</h1>
+<p class="subtitle">Mobile App Design — MVP Screens</p>
+
+<!-- ============ ROW 1: Home + Set Weekly Cap + Add Transaction ============ -->
+<div class="screens-row">
+
+  <!-- SCREEN 1: HOME -->
+  <div class="screen-wrapper">
+    <div class="screen-label">1 · Home</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="status-icons">LTE &nbsp; 100%</span>
+      </div>
+      <div class="header">
+        <div>
+          <div class="greeting">Good morning,</div>
+          <div class="name">Alex</div>
+        </div>
+        <div class="avatar">A</div>
+      </div>
+      <div class="scroll-content">
+        <div class="budget-card">
+          <div class="budget-card-header">
+            <span class="label">This Week's Budget</span>
+            <span class="date">May 26 – Jun 1</span>
+          </div>
+          <div class="amount-row">
+            <span class="amount-big">$127.50</span>
+            <span class="amount-label">remaining</span>
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: 57.5%"></div>
+          </div>
+          <div class="progress-labels">
+            <span class="spent">$172.50 spent</span>
+            <span class="cap">of $300 cap</span>
+          </div>
+        </div>
+
+        <div style="padding-top: 4px;">
+          <div class="section-header">
+            <h3>Top Spending</h3>
+            <a href="#">See all →</a>
+          </div>
+          <div class="category-list">
+            <div class="category-row">
+              <div class="cat-icon" style="background: rgba(255,105,97,0.12);">🍔</div>
+              <div class="cat-info">
+                <div class="cat-name">Food & Dining</div>
+                <div class="cat-pct">40% of budget</div>
+              </div>
+              <div class="cat-amount">$68.20</div>
+            </div>
+            <div class="category-row">
+              <div class="cat-icon" style="background: rgba(70,130,245,0.12);">🚕</div>
+              <div class="cat-info">
+                <div class="cat-name">Transport</div>
+                <div class="cat-pct">17% of budget</div>
+              </div>
+              <div class="cat-amount">$52.30</div>
+            </div>
+            <div class="category-row">
+              <div class="cat-icon" style="background: rgba(155,89,226,0.12);">🛍️</div>
+              <div class="cat-info">
+                <div class="cat-name">Shopping</div>
+                <div class="cat-pct">17% of budget</div>
+              </div>
+              <div class="cat-amount">$52.00</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="add-button-wrapper">
+        <button class="add-button">
+          <span class="plus">+</span> Add Transaction
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <span class="tab-icon">⌂</span>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">☰</span>
+          <span class="tab-label">Categories</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">✦</span>
+          <span class="tab-label">Insights</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⚙</span>
+          <span class="tab-label">Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: SET WEEKLY CAP -->
+  <div class="screen-wrapper">
+    <div class="screen-label">2 · Set Weekly Cap</div>
+    <div class="phone cap-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="status-icons">LTE &nbsp; 100%</span>
+      </div>
+      <div class="cap-hero">
+        <div class="emoji">💰</div>
+        <h2>Set Your Weekly Cap</h2>
+        <p>Choose how much you want to spend each week. We'll keep you on track — no jargon, just clarity.</p>
+      </div>
+      <div class="scroll-content">
+        <div class="cap-form">
+          <div class="cap-input-group">
+            <label>Weekly spending limit</label>
+            <div class="cap-amount-input">
+              <span class="dollar">$</span>300
+            </div>
+            <div class="cap-underline"></div>
+          </div>
+
+          <div class="preset-chips">
+            <div class="chip">$100</div>
+            <div class="chip">$200</div>
+            <div class="chip active">$300</div>
+            <div class="chip">$500</div>
+          </div>
+
+          <div>
+            <label style="font-size:13px;font-weight:600;color:#666F7E;display:block;margin-bottom:8px;">Reset period</label>
+            <div class="period-selector">
+              <div class="period-option active">Weekly</div>
+              <div class="period-option">Bi-weekly</div>
+              <div class="period-option">Monthly</div>
+            </div>
+          </div>
+
+          <p class="cap-note">Your cap resets every Monday at midnight. You can change it anytime from Settings.</p>
+
+          <button class="btn-primary">Set My Cap →</button>
+          <button class="btn-secondary">I'll do this later</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 3: ADD TRANSACTION -->
+  <div class="screen-wrapper">
+    <div class="screen-label">3 · Add Transaction</div>
+    <div class="phone form-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="status-icons">LTE &nbsp; 100%</span>
+      </div>
+      <div class="form-header">
+        <span class="back-btn">←</span>
+        <h2>Add Transaction</h2>
+      </div>
+      <div class="scroll-content">
+        <div class="form-body">
+          <div class="form-group">
+            <label>Amount</label>
+            <div class="form-input amount-input">$24.50</div>
+          </div>
+
+          <div class="form-group">
+            <label>Category</label>
+            <div class="category-grid">
+              <div class="cat-chip selected">
+                <span class="cat-chip-icon">🍔</span>
+                Food
+              </div>
+              <div class="cat-chip">
+                <span class="cat-chip-icon">🚕</span>
+                Transport
+              </div>
+              <div class="cat-chip">
+                <span class="cat-chip-icon">🛍️</span>
+                Shopping
+              </div>
+              <div class="cat-chip">
+                <span class="cat-chip-icon">🏠</span>
+                Bills
+              </div>
+              <div class="cat-chip">
+                <span class="cat-chip-icon">🎉</span>
+                Fun
+              </div>
+              <div class="cat-chip">
+                <span class="cat-chip-icon">💊</span>
+                Health
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Card Used</label>
+            <div class="card-selector">
+              <div class="card-option selected">
+                <div class="card-last4">•••• 4821</div>
+                <div class="card-type">Visa Debit</div>
+              </div>
+              <div class="card-option">
+                <div class="card-last4">•••• 7733</div>
+                <div class="card-type">Visa Credit</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Note (optional)</label>
+            <div class="form-input placeholder">e.g. Lunch with Sam</div>
+          </div>
+
+          <button class="btn-primary" style="margin-top: 8px;">Save Transaction</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ROW 2: Categories + Insights ============ -->
+<div class="screens-row">
+
+  <!-- SCREEN 4: CATEGORIES -->
+  <div class="screen-wrapper">
+    <div class="screen-label">4 · Categories</div>
+    <div class="phone form-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="status-icons">LTE &nbsp; 100%</span>
+      </div>
+      <div class="form-header">
+        <span class="back-btn">←</span>
+        <h2>All Categories</h2>
+      </div>
+      <div class="scroll-content">
+        <div class="categories-body">
+          <div class="summary-card">
+            <h3>Total spent this week</h3>
+            <div class="summary-amount">$172.50</div>
+            <div class="summary-sub">$127.50 remaining of $300 cap</div>
+            <div class="summary-stats">
+              <div class="summary-stat">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Categories</div>
+              </div>
+              <div class="summary-stat">
+                <div class="stat-value">14</div>
+                <div class="stat-label">Transactions</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(255,105,97,0.12);">🍔</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Food & Dining</span>
+                <span class="cat-bar-amount">$68.20</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:40%; background:#FF6961;"></div></div>
+              <div class="cat-bar-pct">40% of budget · 5 transactions</div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(70,130,245,0.12);">🚕</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Transport</span>
+                <span class="cat-bar-amount">$52.30</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:30%; background:#4682F5;"></div></div>
+              <div class="cat-bar-pct">17% of budget · 4 transactions</div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(155,89,226,0.12);">🛍️</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Shopping</span>
+                <span class="cat-bar-amount">$52.00</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:30%; background:#9B59E2;"></div></div>
+              <div class="cat-bar-pct">17% of budget · 2 transactions</div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(247,182,0,0.12);">🏠</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Bills & Utilities</span>
+                <span class="cat-bar-amount">$0.00</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:0%; background:#F7B600;"></div></div>
+              <div class="cat-bar-pct">0% of budget · 0 transactions</div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(46,204,113,0.12);">🎉</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Entertainment</span>
+                <span class="cat-bar-amount">$0.00</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:0%; background:#2ECC71;"></div></div>
+              <div class="cat-bar-pct">0% of budget · 0 transactions</div>
+            </div>
+          </div>
+
+          <div class="full-cat-row">
+            <div class="cat-icon" style="background: rgba(231,76,60,0.12);">💊</div>
+            <div class="cat-bar-container">
+              <div class="cat-bar-header">
+                <span class="cat-bar-name">Health</span>
+                <span class="cat-bar-amount">$0.00</span>
+              </div>
+              <div class="cat-bar-bg"><div class="cat-bar-fill" style="width:0%; background:#E74C3C;"></div></div>
+              <div class="cat-bar-pct">0% of budget · 0 transactions</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item">
+          <span class="tab-icon">⌂</span>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item active">
+          <span class="tab-icon">☰</span>
+          <span class="tab-label">Categories</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">✦</span>
+          <span class="tab-label">Insights</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⚙</span>
+          <span class="tab-label">Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: INSIGHTS -->
+  <div class="screen-wrapper">
+    <div class="screen-label">5 · Insights</div>
+    <div class="phone form-screen">
+      <div class="status-bar">
+        <span>9:41</span>
+        <span class="status-icons">LTE &nbsp; 100%</span>
+      </div>
+      <div class="form-header">
+        <span class="back-btn">←</span>
+        <h2>Weekly Insights</h2>
+      </div>
+      <div class="scroll-content">
+        <div class="insights-body">
+          <div class="week-toggle">
+            <div class="week-toggle-option">Last week</div>
+            <div class="week-toggle-option active">This week</div>
+          </div>
+
+          <div class="insight-highlight">
+            <div class="emoji">🎯</div>
+            <h3>You're on track!</h3>
+            <p>You've used 57% of your budget with 4 days left. At this pace, you'll have about $50 to spare.</p>
+          </div>
+
+          <div class="insight-card">
+            <div class="insight-header">
+              <div class="insight-icon" style="background: rgba(255,105,97,0.12);">🍔</div>
+              <span class="insight-title">Biggest category</span>
+            </div>
+            <div class="insight-body">
+              <strong>Food & Dining</strong> is your top spend at <strong>$68.20</strong> (40% of total). That's about <strong>$13.64 per meal</strong> on average this week.
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div class="insight-header">
+              <div class="insight-icon" style="background: rgba(70,130,245,0.12);">📉</div>
+              <span class="insight-title">Compared to last week</span>
+            </div>
+            <div class="insight-body">
+              You've spent <strong>12% less</strong> than the same point last week. Transport spending dropped the most — <strong>down $18</strong> from last week.
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div class="insight-header">
+              <div class="insight-icon" style="background: rgba(46,204,113,0.12);">💡</div>
+              <span class="insight-title">Quick tip</span>
+            </div>
+            <div class="insight-body">
+              Your food spending is highest on <strong>weekends</strong>. Cooking one extra meal at home could save you about <strong>$15/week</strong>.
+            </div>
+          </div>
+
+          <div class="insight-card">
+            <div class="insight-header">
+              <div class="insight-icon" style="background: rgba(247,182,0,0.12);">🏆</div>
+              <span class="insight-title">Streak</span>
+            </div>
+            <div class="insight-body">
+              You've stayed under your weekly cap for <strong>3 weeks in a row</strong>. Keep it going!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar">
+        <div class="tab-item">
+          <span class="tab-icon">⌂</span>
+          <span class="tab-label">Home</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">☰</span>
+          <span class="tab-label">Categories</span>
+        </div>
+        <div class="tab-item active">
+          <span class="tab-icon">✦</span>
+          <span class="tab-label">Insights</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⚙</span>
+          <span class="tab-label">Settings</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
